@@ -121,7 +121,7 @@ void setup() {
 
 void loop() {
   server.handleClient();
-    if (WiFi.status() != WL_CONNECTED) {
+  if (WiFi.status() != WL_CONNECTED) {
     internet_access = 0;
     delay(2000);
     // Check if not connected , disable all network services, reconnect , enable all network services
@@ -172,8 +172,8 @@ void loop() {
 
 
 /**
- *  Reconnect to wifi - in success enable all services and update time
- */
+    Reconnect to wifi - in success enable all services and update time
+*/
 void reconnect_cnv() {
   close_all_services();
   delay(1000);
@@ -196,8 +196,8 @@ void reconnect_cnv() {
 */
 void enableLoad() {
 
-    loadStatus = 1;
-    digitalWrite(LOAD_VCC, 1);
+  loadStatus = 1;
+  digitalWrite(LOAD_VCC, 1);
 }
 
 /**
