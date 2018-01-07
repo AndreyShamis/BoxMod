@@ -27,9 +27,9 @@
 #define   NTP_TIME_OFFSET_SEC               10800                   // Time offset
 #define   NTP_UPDATE_INTERVAL_MS            60000                   // NTP Update interval - 1 min
 
-#define   UART_BAUD_RATE                    921600
+#define   UART_BAUD_RATE                    9600 //921600
 
-#define   LOOP_DELAY                        50                      // Wait each loop for LOOP_DELAY
+#define   LOOP_DELAY                        1                       // Wait each loop for LOOP_DELAY
 // Unchangeable settings
 #define   INCORRECT_EPOCH                   200000                  // Minimum value for time epoch
 /**
@@ -39,6 +39,8 @@
 */
 #define   OFF_ON_DELAY_SEC                  30
 
+
+#define MAX_PWM  1020
 /**
    shows counter values identical to one second
    For example loop_delay=10, counter sec will be 100 , when (counter%100 == 0) happens every second
@@ -83,17 +85,23 @@ NTPClient           timeClient(ntpUDP, NTP_SERVER, NTP_TIME_OFFSET_SEC, NTP_UPDA
 /**
  ****************************************************************************************************
 */
-ADC_MODE(ADC_VCC);
+//ADC_MODE(ADC_VCC);
 
 /**
  ****************************************************************************************************
  ****************************************************************************************************
  ****************************************************************************************************
 */
+extern "C" {
+#include "user_interface.h"
+
+  extern struct rst_info *resetInfo;
+}
 
 void setup() {
   //ADC_MODE(ADC_VCC);
   pinMode(LOAD_VCC, OUTPUT);
+  resetInfo = ESP.getResetInfoPtr();
   if (CHECK_INTERNET_CONNECT) {
     internet_access = 0;
   }
@@ -115,28 +123,198 @@ void setup() {
   timeClient.begin();
   timeClient.forceUpdate();
   message(" ----> All started <----", PASS);
-
+  wdt_enable(80000);
 
 }
 
 void loop() {
-  server.handleClient();
-  if (WiFi.status() != WL_CONNECTED) {
-    internet_access = 0;
-    delay(2000);
-    // Check if not connected , disable all network services, reconnect , enable all network services
-    if (WiFi.status() != WL_CONNECTED) {
-      message("WIFI DISCONNECTED", FAIL_t);
-      reconnect_cnv();
-    }
+  if (resetInfo->reason != 6 && resetInfo->reason <= 6) {
+    message("getResetReason: " + ESP.getResetReason() + " |getResetInfo: " + ESP.getResetInfo(), INFO);
   }
+  server.handleClient();
+  int  mlt  = 10;
+  //  message(" analogWrite LOW", PASS);
+  //  digitalWrite(LOAD_VCC, LOW);
+  //
+  //  delay(3000);
+  //  message(" analogWrite HIGH", PASS);
+  //  digitalWrite(LOAD_VCC, HIGH);
+  //  message(" START DELAY HIGH", PASS);
+  //  delay(3000);
+  //  message(" END DELAY HIGH", PASS);
+
+  //    digitalWrite(LOAD_VCC, LOW);
+  //  message(" analogWrite LOW", PASS);
+  //  delay(2000);
+  //
+  //  message(" analogWrite 200", PASS);
+  //  analogWrite(LOAD_VCC, 200);
+  //  delay(4000);
+  //
+  //  message(" analogWrite 500", PASS);
+  //  analogWrite(LOAD_VCC, 500);
+  //  delay(4000);
+  //
+  //  message(" analogWrite 800", PASS);
+  //  analogWrite(LOAD_VCC, 800);
+  //  delay(4000);
+  //
+  //
+  //
+  //
+  //  message(" analogWrite 1000", PASS);
+  //  analogWrite(LOAD_VCC, 1000);
+  //  message(" START DELAY", PASS);
+  //  delay(4000);
+  //  message(" END DELAY", PASS);
+  //
+  //
+  //  analogWrite(LOAD_VCC, 10);
+  //  message(" analogWrite 10", PASS);
+  //  delay(1000);
+
+
+
+
+
+
+  //    if (counter == 200 * mlt ) {
+  //      analogWrite(LOAD_VCC, 0);
+  //      message(" analogWrite 0", PASS);
+  //      delay(8000);
+  //    }
+  //  //  if (counter == 400 * mlt) {
+  //  //    analogWrite(LOAD_VCC, 255);
+  //  //    message(" analogWrite 255", PASS);
+  //  //  }
+  //  ////
+  //    if (counter == 600 * mlt) {
+  //      analogWrite(LOAD_VCC, 1000);
+  //      analogWriteFreq(80000);
+  //      message(" analogWrite 1000", PASS);
+  //      delay(8000);
+  //    }
+  //
+  //  if (counter == 400 * mlt) {
+  //
+  //
+  //    analogWrite(LOAD_VCC, 767);
+  //    message(" analogWrite 767", PASS);
+  //    delay(20);
+  ////    for (int i = 60000; i <= 70000000;i=i+10000){
+  ////      if(i==11){
+  ////        i = 10;
+  ////      }
+  ////      if(i%20000 == 0){
+  ////        message(" analogWrite 767 FREQENCY " + String(i), PASS);
+  ////        delay(200);
+  ////        yield();
+  ////      }
+  ////      analogWriteFreq(i);
+  ////    }
+  //
+  //
+  //  if (counter == 1000 * mlt) {
+  //    message("MAX PWMRANGE is " + String(PWMRANGE), INFO);
+  //    analogWrite(LOAD_VCC, 1023);   // turn the LED on (HIGH is the voltage level)
+  //    message(" analogWrite 1023", PASS);
+  //  }
+
+  //if (counter == 1200 * mlt) {
+
+  //
+  //
+  message(" ", PASS);
+
+  delay(2000);
+  message("  +++++++++++++++++++ Turning on +++++++++++++++++++ ", PASS);
+  yield();
+  //  for (int i = 1; i <= 1000; i++ ) {
+  //    analogWrite(LOAD_VCC, i);
+  //    //analogWriteFreq(1);
+  //    delay(10);
+  //  }
+  for (int i = 0; i <= 100; i++ ) {
+    enableCoil(i);
+    //analogWriteFreq(1);
+    delay(30);
+  }
+  message("  +++++++++++++++++++ Turning on +++++++++++++++++++ END ", PASS);
+
+
+
+//  message(" -------------------------------------------------- Turning off", PASS);
+//
+//  //  for (int i = 1000; i >= 0; i--) {
+//  //    analogWrite(LOAD_VCC, i);
+//  //    //analogWriteFreq(1);
+//  //    delay(10);
+//  //  }
+//  for (int i = 100; i >= 0; i--) {
+//    enableCoil(i);
+//    //analogWriteFreq(1);
+//    delay(30);
+//  }
+//
+//  message(" -------------------------------------------------- Turning off END", PASS);
+
+
+
+  delay(200);
+    message(" analogWrite 0", PASS);
+  analogWrite(LOAD_VCC, 0);
+  delay(200);
+  if (Serial.available() > 0) {
+    Serial.println("Received data " + String(read_serial()));
+  }
+
+  
+
+//    delay(2000);
+//  message(" digitalWrite LOW ", PASS);
+//  digitalWrite(LOAD_VCC, LOW);
+//    delay(2000);
+//  delay(2000);
+//  message(" digitalWrite HIGH ", PASS);
+//  digitalWrite(LOAD_VCC, HIGH);
+//    delay(2000);
+//  delay(2000);
+//
+//
+
+  if (Serial.available() > 0) {
+    Serial.println("Received data " + String(read_serial()));
+  }
+
+  //}
+  /**
+     Analog output
+     analogWrite(pin, value) enables software PWM on the given pin.
+     PWM may be used on pins 0 to 16.
+     Call analogWrite(pin, 0) to disable PWM on the pin.
+     value may be in range from 0 to PWMRANGE, which is equal to 1023 by default.
+     PWM range may be changed by calling analogWriteRange(new_range).
+
+     PWM frequency is 1kHz by default. Call analogWriteFreq(new_frequency) to change the frequency.
+  */
+
+  //  if (WiFi.status() != WL_CONNECTED) {
+  //    internet_access = 0;
+  //    delay(2000);
+  //    // Check if not connected , disable all network services, reconnect , enable all network services
+  //    if (WiFi.status() != WL_CONNECTED) {
+  //      message("WIFI DISCONNECTED", FAIL_t);
+  //      reconnect_cnv();
+  //    }
+  //  }
 
   if (CHECK_INTERNET_CONNECT) {
     if (counter % CHECK_INTERNET_CONNECTIVITY_CTR == 0 || !internet_access)
     {
+      message("Checking Network Connection", INFO);
       internet_access = Ping.ping(pingServer, 2);
-      //int avg_time_ms = Ping.averageTime();
-      //message("Ping result is " + String(internet_access) + " avg_time_ms:" + String(avg_time_ms), INFO);
+      int avg_time_ms = Ping.averageTime();
+      message("Ping result is " + String(internet_access) + " avg_time_ms:" + String(avg_time_ms), INFO);
       if (!internet_access) {
         internet_access_failures++;
         delay(500);
@@ -152,7 +330,7 @@ void loop() {
       reconnect_cnv();
     }
   }
-  if (counter == 20) {
+  if (counter == 0) {
     print_all_info();
 
   }
@@ -165,12 +343,63 @@ void loop() {
   delay(LOOP_DELAY);
   counter++;
   if (counter >= 16000) {
-    counter = 0;
+    counter = 1;
     //printTemperatureToSerial();
   }
 }
 
+int getPercentage(int value) {
+  if (value == 0) {
+    return 0;
+  }
+  if (value  > 1000) {
+    return 100;
+  }
+}
 
+
+int percentageToValue(int percent) {
+  if (percent <= 0) {
+    return 0;
+  }
+  if (percent  >= 100) {
+    return MAX_PWM;
+  }
+
+  return (int)((MAX_PWM * percent) / 100);
+}
+
+void enableCoil(int percent) {
+  if (percent <= 0) {
+    digitalWrite(LOAD_VCC, LOW);
+  }
+  if (percent >= 100) {
+    analogWrite(LOAD_VCC, MAX_PWM);
+  }
+  int value = percentageToValue(percent);
+  if (value >= 0 && value <= MAX_PWM) {
+     message("Writing "  + String(value), INFO);
+    analogWrite(LOAD_VCC, value );
+  }
+  else {
+    message("BAD percent " + String(percent) + " "  + String(value), ERROR);
+  }
+
+}
+String read_serial() {
+  String data = "";
+  // send data only when you receive data:
+  while (Serial.available() > 0) {
+    // get the new byte:
+    char inChar = (char)Serial.read();
+    data += inChar;
+
+    // say what you got:
+    //Serial.print("I received: ");
+    //Serial.println(data);
+  }
+  return data;
+}
 /**
     Reconnect to wifi - in success enable all services and update time
 */
@@ -314,14 +543,14 @@ void close_all_services() {
 void update_time() {
   if (timeClient.getEpochTime() < INCORRECT_EPOCH) {
     unsigned short counter_tmp = 0;
-    while (timeClient.getEpochTime() < INCORRECT_EPOCH && counter_tmp < 10) {
+    while (timeClient.getEpochTime() < INCORRECT_EPOCH && counter_tmp < 2) {
       message("Incorrect time, trying to update: #:" + String(counter_tmp) , CRITICAL);
       counter_tmp++;
       timeClient.update();
       timeClient.forceUpdate();
       timeClient.update();
       if (timeClient.getEpochTime() < INCORRECT_EPOCH) {
-        delay(1000 + 500 * counter_tmp);
+        delay(1000 + 50 * counter_tmp);
         yield();
       }
       else {
@@ -451,5 +680,9 @@ void print_all_info() {
   message("Flash Chip Id/Size/Speed/Mode: " + String(ESP.getFlashChipId()) + "/" + String(ESP.getFlashChipSize()) + "/" + String(ESP.getFlashChipSpeed()) + "/" + String(ESP.getFlashChipMode()), INFO);
   message("SdkVersion: " + String(ESP.getSdkVersion()) + "\tCoreVersion: " + ESP.getCoreVersion() + "\tBootVersion: " + ESP.getBootVersion(), INFO);
   message("CpuFreqMHz: " + String(ESP.getCpuFreqMHz()) + " \tBootMode: " + String(ESP.getBootMode()) + "\tSketchSize: " + String(ESP.getSketchSize()) + "\tFreeSketchSpace: " + String(ESP.getFreeSketchSpace()), INFO);
-  //message("getResetReason: " + ESP.getResetReason() + " |getResetInfo: " + ESP.getResetInfo() + " |Address : " + getAddressString(insideThermometer[0]), INFO);
+  resetInfo = ESP.getResetInfoPtr();
+  if (resetInfo->reason != 6 && resetInfo->reason <= 6) {
+    message("getResetReason: " + ESP.getResetReason() + " |getResetInfo: " + ESP.getResetInfo(), INFO);
+  }
+
 }
