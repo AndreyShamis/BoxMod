@@ -132,98 +132,7 @@ void loop() {
     message("getResetReason: " + ESP.getResetReason() + " |getResetInfo: " + ESP.getResetInfo(), INFO);
   }
   server.handleClient();
-  int  mlt  = 10;
-  //  message(" analogWrite LOW", PASS);
-  //  digitalWrite(LOAD_VCC, LOW);
-  //
-  //  delay(3000);
-  //  message(" analogWrite HIGH", PASS);
-  //  digitalWrite(LOAD_VCC, HIGH);
-  //  message(" START DELAY HIGH", PASS);
-  //  delay(3000);
-  //  message(" END DELAY HIGH", PASS);
 
-  //    digitalWrite(LOAD_VCC, LOW);
-  //  message(" analogWrite LOW", PASS);
-  //  delay(2000);
-  //
-  //  message(" analogWrite 200", PASS);
-  //  analogWrite(LOAD_VCC, 200);
-  //  delay(4000);
-  //
-  //  message(" analogWrite 500", PASS);
-  //  analogWrite(LOAD_VCC, 500);
-  //  delay(4000);
-  //
-  //  message(" analogWrite 800", PASS);
-  //  analogWrite(LOAD_VCC, 800);
-  //  delay(4000);
-  //
-  //
-  //
-  //
-  //  message(" analogWrite 1000", PASS);
-  //  analogWrite(LOAD_VCC, 1000);
-  //  message(" START DELAY", PASS);
-  //  delay(4000);
-  //  message(" END DELAY", PASS);
-  //
-  //
-  //  analogWrite(LOAD_VCC, 10);
-  //  message(" analogWrite 10", PASS);
-  //  delay(1000);
-
-
-
-
-
-
-  //    if (counter == 200 * mlt ) {
-  //      analogWrite(LOAD_VCC, 0);
-  //      message(" analogWrite 0", PASS);
-  //      delay(8000);
-  //    }
-  //  //  if (counter == 400 * mlt) {
-  //  //    analogWrite(LOAD_VCC, 255);
-  //  //    message(" analogWrite 255", PASS);
-  //  //  }
-  //  ////
-  //    if (counter == 600 * mlt) {
-  //      analogWrite(LOAD_VCC, 1000);
-  //      analogWriteFreq(80000);
-  //      message(" analogWrite 1000", PASS);
-  //      delay(8000);
-  //    }
-  //
-  //  if (counter == 400 * mlt) {
-  //
-  //
-  //    analogWrite(LOAD_VCC, 767);
-  //    message(" analogWrite 767", PASS);
-  //    delay(20);
-  ////    for (int i = 60000; i <= 70000000;i=i+10000){
-  ////      if(i==11){
-  ////        i = 10;
-  ////      }
-  ////      if(i%20000 == 0){
-  ////        message(" analogWrite 767 FREQENCY " + String(i), PASS);
-  ////        delay(200);
-  ////        yield();
-  ////      }
-  ////      analogWriteFreq(i);
-  ////    }
-  //
-  //
-  //  if (counter == 1000 * mlt) {
-  //    message("MAX PWMRANGE is " + String(PWMRANGE), INFO);
-  //    analogWrite(LOAD_VCC, 1023);   // turn the LED on (HIGH is the voltage level)
-  //    message(" analogWrite 1023", PASS);
-  //  }
-
-  //if (counter == 1200 * mlt) {
-
-  //
-  //
   message(" ", PASS);
 
   delay(2000);
@@ -234,53 +143,44 @@ void loop() {
   //    //analogWriteFreq(1);
   //    delay(10);
   //  }
+  for (float i = 0; i <= 10; i = i + 0.1 ) {
+    enableCoil(i);
+    //analogWriteFreq(1);
+    delay(100);
+  }
   for (int i = 0; i <= 100; i++ ) {
     enableCoil(i);
     //analogWriteFreq(1);
-    delay(30);
+    delay(100);
   }
   message("  +++++++++++++++++++ Turning on +++++++++++++++++++ END ", PASS);
 
-
-
-//  message(" -------------------------------------------------- Turning off", PASS);
-//
-//  //  for (int i = 1000; i >= 0; i--) {
-//  //    analogWrite(LOAD_VCC, i);
-//  //    //analogWriteFreq(1);
-//  //    delay(10);
-//  //  }
-//  for (int i = 100; i >= 0; i--) {
-//    enableCoil(i);
-//    //analogWriteFreq(1);
-//    delay(30);
-//  }
-//
-//  message(" -------------------------------------------------- Turning off END", PASS);
+  //  message(" -------------------------------------------------- Turning off", PASS);
+  //
+  //  //  for (int i = 1000; i >= 0; i--) {
+  //  //    analogWrite(LOAD_VCC, i);
+  //  //    //analogWriteFreq(1);
+  //  //    delay(10);
+  //  //  }
+  //  for (int i = 100; i >= 0; i--) {
+  //    enableCoil(i);
+  //    //analogWriteFreq(1);
+  //    delay(30);
+  //  }
+  //
+  //  message(" -------------------------------------------------- Turning off END", PASS);
 
 
 
   delay(200);
-    message(" analogWrite 0", PASS);
+  message(" analogWrite 0", PASS);
   analogWrite(LOAD_VCC, 0);
   delay(200);
   if (Serial.available() > 0) {
     Serial.println("Received data " + String(read_serial()));
   }
 
-  
 
-//    delay(2000);
-//  message(" digitalWrite LOW ", PASS);
-//  digitalWrite(LOAD_VCC, LOW);
-//    delay(2000);
-//  delay(2000);
-//  message(" digitalWrite HIGH ", PASS);
-//  digitalWrite(LOAD_VCC, HIGH);
-//    delay(2000);
-//  delay(2000);
-//
-//
 
   if (Serial.available() > 0) {
     Serial.println("Received data " + String(read_serial()));
@@ -358,7 +258,7 @@ int getPercentage(int value) {
 }
 
 
-int percentageToValue(int percent) {
+int percentageToValue(float percent) {
   if (percent <= 0) {
     return 0;
   }
@@ -369,7 +269,7 @@ int percentageToValue(int percent) {
   return (int)((MAX_PWM * percent) / 100);
 }
 
-void enableCoil(int percent) {
+void enableCoil(float percent) {
   if (percent <= 0) {
     digitalWrite(LOAD_VCC, LOW);
   }
@@ -378,7 +278,7 @@ void enableCoil(int percent) {
   }
   int value = percentageToValue(percent);
   if (value >= 0 && value <= MAX_PWM) {
-     message("Writing "  + String(value), INFO);
+    message("Writing "  + String(value), INFO);
     analogWrite(LOAD_VCC, value );
   }
   else {
